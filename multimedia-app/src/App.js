@@ -180,8 +180,8 @@ export default function App() {
     <div style={styles.modal}>
      <div style={styles.modalContent}>
       <div style={styles.modalHeader}>
-        <p style={{ fontWeight: "bold" }}>Search Result</p> 
-       <button style={styles.closeButton} onClick={() => setShowSearchModal(false)}>x</button>
+        <p style={{ fontWeight: "bold" }}>Search Files</p> 
+       <button style={styles.closeButton} onClick={() => setShowSearchModal(false)}>close</button>
       </div>
 
         {/* File Search */}
@@ -265,7 +265,7 @@ export default function App() {
                 }}
               >
                 {/* To display 'uploading...' when clicked */}
-                {uploadingFile ? "Uploading..." : "Upload Files"}
+                {uploadingFile ? "⬆️ Uploading..." : "⬆ Upload Files"}
               </button>
             <button style={styles.controlButton}
               onClick={() => {
@@ -301,6 +301,11 @@ export default function App() {
                 if (selectedFile) {
                   const newFiles = myFiles.filter(file => file.id !== selectedFile.id);
                   setMyFiles(newFiles);
+
+                  // To be able to delete uploaded files 
+                  setUploadedFiles((prevFiles) =>
+                  prevFiles.filter((file) => file.id !== selectedFile.id)
+                );
                   setSelectedFile(null);
                 }
               }}
@@ -311,8 +316,9 @@ export default function App() {
               onClick={() => {
                 setShowSearchModal(true)
               }}
-            >Search Files</button>
+            >🔍Search Files</button>
           </div>
+
      <div style={styles.fileContainer}>
       <div style={{ width: "100%", padding: 10 }}>
        {myFiles.map((file) => {
