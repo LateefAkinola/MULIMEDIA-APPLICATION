@@ -37,6 +37,7 @@ export default function App() {
  const [searchFileType, setSearchFileType] = useState("all");
  const [filteredFiles, setFilteredFiles] = useState([]);
  const [showSearchModal, setShowSearchModal] = useState(false)
+ const [showUploadSuccessModal, setShowUploadSuccessModal] = useState(false)
  const fileInputRef = useRef(null);
  
  useEffect(() => {
@@ -96,6 +97,8 @@ export default function App() {
   setMyFiles((prevFiles) => [...prevFiles, ...uploadedFiles]);
   setUploadedFiles((prevFiles) => [...prevFiles, ...uploadedFiles]); // Update uploadedFiles state
   setUploadingFile(false);
+  // show successful upload modal 
+  setShowUploadSuccessModal(true);
 };
 
  // Get file type based on MIME type
@@ -113,76 +116,76 @@ export default function App() {
 
  return (
   <>
-{showChartModal && (
-    <div style={styles.modal}>
-     <div style={styles.modalContent}>
-      <div style={styles.modalHeader}>
-       <p style={{ fontWeight: "bold" }}>Files Breakdown</p>
-       <button style={styles.closeButton} onClick={() => setShowChartModal(false)}>close</button>
+  {showChartModal && (
+      <div style={styles.modal}>
+      <div style={styles.modalContent}>
+        <div style={styles.modalHeader}>
+        <p style={{ fontWeight: "bold" }}>Files Breakdown</p>
+        <button style={styles.closeButton} onClick={() => setShowChartModal(false)}>&times; close</button>
+        </div>
+        <div style={styles.modalBody}>
+        <Pie
+          data={{
+          labels: ['Video', 'Audio', 'Document', 'Image'],
+          datasets: [
+            {
+            label: 'Files Breakdown',
+            data: [myFiles.filter(file => file.type === 'video').length, myFiles.filter(file => file.type === 'audio').length, myFiles.filter(file => file.type === 'document').length, myFiles.filter(file => file.type === 'image').length],
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+            ],
+            borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+            ],
+            borderWidth: 1,
+            },
+          ],
+          }}
+        />
+        <Bar
+          data={{
+          labels: ['Video', 'Audio', 'Document', 'Image'],
+          datasets: [
+            {
+            label: 'Files Breakdown',
+            data: [myFiles.filter(file => file.type === 'video').length, myFiles.filter(file => file.type === 'audio').length, myFiles.filter(file => file.type === 'document').length, myFiles.filter(file => file.type === 'image').length],
+            backgroundColor: [
+              'rgba(255, 99, 132, 0.2)',
+              'rgba(54, 162, 235, 0.2)',
+              'rgba(255, 206, 86, 0.2)',
+              'rgba(75, 192, 192, 0.2)',
+            ],
+            borderColor: [
+              'rgba(255, 99, 132, 1)',
+              'rgba(54, 162, 235, 1)',
+              'rgba(255, 206, 86, 1)',
+              'rgba(75, 192, 192, 1)',
+            ],
+            borderWidth: 1,
+            },
+          ],
+          }}
+          options={barChartOptions}
+        />
+        </div>
       </div>
-      <div style={styles.modalBody}>
-       <Pie
-        data={{
-         labels: ['Video', 'Audio', 'Document', 'Image'],
-         datasets: [
-          {
-           label: 'Files Breakdown',
-           data: [myFiles.filter(file => file.type === 'video').length, myFiles.filter(file => file.type === 'audio').length, myFiles.filter(file => file.type === 'document').length, myFiles.filter(file => file.type === 'image').length],
-           backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-           ],
-           borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)',
-           ],
-           borderWidth: 1,
-          },
-         ],
-        }}
-       />
-       <Bar
-        data={{
-         labels: ['Video', 'Audio', 'Document', 'Image'],
-         datasets: [
-          {
-           label: 'Files Breakdown',
-           data: [myFiles.filter(file => file.type === 'video').length, myFiles.filter(file => file.type === 'audio').length, myFiles.filter(file => file.type === 'document').length, myFiles.filter(file => file.type === 'image').length],
-           backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(75, 192, 192, 0.2)',
-           ],
-           borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(75, 192, 192, 1)',
-           ],
-           borderWidth: 1,
-          },
-         ],
-        }}
-        options={barChartOptions}
-       />
       </div>
-     </div>
-    </div>
-   )}
+  )}
 
-   {/* SearchModal */}
-   {showSearchModal && (
+  {/* Search Modal */}
+  {showSearchModal && (
     <div style={styles.modal}>
      <div style={styles.modalContent}>
-      <div style={styles.modalHeader}>
+       <div style={styles.modalHeader}>
         <p style={{ fontWeight: "bold" }}>Search Files</p> 
-       <button style={styles.closeButton} onClick={() => setShowSearchModal(false)}>close</button>
-      </div>
+        <button style={styles.closeButton} onClick={() => setShowSearchModal(false)}>&times; close</button>
+       </div>
 
         {/* File Search */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
@@ -235,19 +238,32 @@ export default function App() {
             })}
           </div>
         </div>
-  </div>
-  </div>
-   )}
+     </div>
+    </div>
+    )}
 
-   {/* File Upload */}
-   <input
-        type="file"
-        accept="audio/*,video/*,image/*,application/pdf"
-        multiple
-        onChange={handleFileUpload}
-        style={{ display: "none" }}
-        ref={fileInputRef}
-      />
+  {/* Upload Success Modal */}
+  {showUploadSuccessModal && (
+    <div style={styles.modal}>
+     <div style={styles.modalUploadSuccess}>
+      <div style={styles.modalHeader}>
+        <p style={{ fontWeight: "bold" }}>Upload Successful ✅</p> 
+       <button style={styles.closeButton} onClick={() => setShowUploadSuccessModal(false)}>&times; close</button>
+      </div>
+      <p>Your file(s) have been uploaded successfully!</p>
+     </div>
+    </div>
+  )}
+
+  {/* File Upload */}
+  <input
+      type="file"
+      accept="audio/*,video/*,image/*,application/pdf"
+      multiple
+      onChange={handleFileUpload}
+      style={{ display: "none" }}
+      ref={fileInputRef}
+    />
       
    <div className="App">
     <Header />
@@ -265,7 +281,7 @@ export default function App() {
                 }}
               >
                 {/* To display 'uploading...' when clicked */}
-                {uploadingFile ? "⬆️ Uploading..." : "⬆ Upload Files"}
+                {uploadingFile ? "🔄 Uploading..." : "⬆ Upload Files"}
               </button>
             <button style={styles.controlButton}
               onClick={() => {
@@ -338,7 +354,7 @@ export default function App() {
         }
        })}
 
-       {/* To display existing files and the uploaded files will be displayed in the file list. */}
+       {/* To display existing files and the uploaded files in the file list. */}
        {uploadedFiles.map((file) => (
         <div style={styles.file} className="files" key={file.id} onClick={() => {
           if (selectedFile && selectedFile.id === file.id) {
@@ -468,6 +484,17 @@ modalSearchList:{
   padding: '10px',
   overflowY: 'auto', // Enable vertical scrolling
 },
+
+modalUploadSuccess: {
+  backgroundColor: '#fff',
+  padding: '20px',
+  height: '20vh',
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  flexDirection: 'column',
+},
+
 modalHeader: {
   width: '100%',
   display: 'flex',
