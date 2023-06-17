@@ -1,37 +1,37 @@
 export const data = [
     {
       id: 1,
-      name: 'Video File',
+      name: 'Royal Opera House Footage',
       type: 'video',
       path: "/file-server/video.mp4"
     },
     {
       id: 2,
-      name: 'Audio File',
+      name: 'Ringtone',
       type: 'audio',
       path: "/file-server/audio.mp3"
     },
     {
       id: 3,
-      name: 'Document File',
+      name: 'Git Cheat Sheet Education',
       type: 'document',
-      path: "/file-server/document.pdf"
+      path: "/file-server/git-cheat-sheet-education.pdf"
     },
     {
       id: 4,
-      name: 'Image File',
-      type: 'image',
-      path: "/file-server/image.jpg"
+      name: 'Instructions for taking the TensorFlow Certificate Exam',
+      type: 'document',
+      path: "/file-server/Instructions_for_taking_the_TensorFlow_Certificate_exam.pdf"
     },
     {
       id: 5,
-      name: 'Image File 2',
+      name: 'NFT picture',
       type: 'image',
       path: "/file-server/image1.png"
     },
     {
       id: 6,
-      name: 'Image File 3',
+      name: 'Robot and Human',
       type: 'image',
       path: "/file-server/image2.jpg"
     },

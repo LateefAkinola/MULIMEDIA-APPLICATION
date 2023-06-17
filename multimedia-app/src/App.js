@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { data } from './data';
 import { Header } from "./components/Header";
 import { AudioPlayer } from './components/AudioPlayer';
@@ -31,10 +31,38 @@ export default function App() {
  const [selectedFile, setSelectedFile] = useState(null)
  const [filePath, setFilePath] = useState("/file-server/")
  const [showChartModal, setShowChartModal] = useState(false)
+ const [uploadingFile, setUploadingFile] = useState(false);
+ const [uploadedFiles, setUploadedFiles] = useState([]);
+ const [searchKeyword, setSearchKeyword] = useState("");
+ const [searchFileType, setSearchFileType] = useState("all");
+ const [filteredFiles, setFilteredFiles] = useState([]);
+ const [showSearchModal, setShowSearchModal] = useState(false)
+ const fileInputRef = useRef(null);
  
  useEffect(() => {
   setMyFiles(data)
  }, [])
+
+ useEffect(() => {
+  const allFiles = [...myFiles, ...uploadedFiles];
+
+  const filtered = allFiles.filter((file) => {
+    const matchesKeyword =
+      file.name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+      file.type.toLowerCase().includes(searchKeyword.toLowerCase());
+
+    if (searchFileType === "all") {
+      return matchesKeyword;
+    } else {
+      return matchesKeyword && file.type === searchFileType;
+    }
+  });
+
+  setFilteredFiles(filtered);
+ }, [searchKeyword, searchFileType, myFiles, uploadedFiles]);
+
+
+
  var barChartOptions = {
   responsive: true,
   plugins: {
@@ -47,6 +75,42 @@ export default function App() {
    },
   },
  };
+
+ // Handles file upload
+ const handleFileUpload = (event) => {
+    const files = event.target.files;
+    const uploadedFiles = [];
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+      const newFile = {
+        id: Date.now() + i,
+        name: file.name,
+        type: getFileType(file.type),
+        path: URL.createObjectURL(file)
+      };
+      uploadedFiles.push(newFile);
+  }
+
+  // Update the file list with the uploaded files
+  setMyFiles((prevFiles) => [...prevFiles, ...uploadedFiles]);
+  setUploadedFiles((prevFiles) => [...prevFiles, ...uploadedFiles]); // Update uploadedFiles state
+  setUploadingFile(false);
+};
+
+ // Get file type based on MIME type
+ const getFileType = (fileType) => {
+    if (fileType.startsWith("audio")) {
+      return "audio";
+    } else if (fileType.startsWith("video")) {
+      return "video";
+    } else if (fileType.startsWith("image")) {
+      return "image";
+    } else {
+      return "document";
+    }
+ };
+
  return (
   <>
 {showChartModal && (
@@ -110,6 +174,81 @@ export default function App() {
      </div>
     </div>
    )}
+
+   {/* SearchModal */}
+   {showSearchModal && (
+    <div style={styles.modal}>
+     <div style={styles.modalContent}>
+      <div style={styles.modalHeader}>
+        <p style={{ fontWeight: "bold" }}>Search Result</p> 
+       <button style={styles.closeButton} onClick={() => setShowSearchModal(false)}>x</button>
+      </div>
+
+        {/* File Search */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                {/* Search input */}
+                <input
+                  type="text"
+                  placeholder="Search by name or type"
+                  value={searchKeyword}
+                  onChange={(e) => setSearchKeyword(e.target.value)}
+                />
+                {/* File type filter */}
+                <select
+                  value={searchFileType}
+                  onChange={(e) => setSearchFileType(e.target.value)}
+                >
+                  <option value="all">All</option>
+                  <option value="audio">Audio</option>
+                  <option value="video">Video</option>
+                  <option value="document">Document</option>
+                  <option value="image">Image</option>
+                </select>
+        </div>
+        
+        {/* Display filtered files */}
+        <div style={styles.modalSearchList}>
+          <div style={{ width: "100%", padding: 10 }}>
+            {/* Iterate over unique file IDs */}
+            {Array.from(new Set(filteredFiles.map(file => file.id))).map(fileId => {
+              const file = filteredFiles.find(file => file.id === fileId);
+              if (file) {
+                return (
+                  // Individual file
+                  <div
+                    style={styles.file}
+                    className="files"
+                    key={file.id}
+                    onClick={() => {
+                      if (selectedFile && selectedFile.id === file.id) {
+                        setSelectedFile(null);
+                        return;
+                      }
+                      setSelectedFile(file);
+                    }}
+                  >
+                    <p>{file.name}</p>
+                  </div>
+                );
+              }
+              return null;
+            })}
+          </div>
+        </div>
+  </div>
+  </div>
+   )}
+
+   {/* File Upload */}
+   <input
+        type="file"
+        accept="audio/*,video/*,image/*,application/pdf"
+        multiple
+        onChange={handleFileUpload}
+        style={{ display: "none" }}
+        ref={fileInputRef}
+      />
+      
    <div className="App">
     <Header />
     <div style={styles.container}>
@@ -118,6 +257,16 @@ export default function App() {
       <p>{selectedFile ? selectedFile.path : filePath}</p>
      </div>
      <div style={styles.controlTools}>
+            <button
+                style={styles.controlButton}
+                onClick={() => {
+                  fileInputRef.current.click();
+                  setUploadingFile(true);
+                }}
+              >
+                {/* To display 'uploading...' when clicked */}
+                {uploadingFile ? "Uploading..." : "Upload Files"}
+              </button>
             <button style={styles.controlButton}
               onClick={() => {
                 if (selectedFile) {
@@ -156,6 +305,13 @@ export default function App() {
                 }
               }}
             >Delete</button>
+
+            {/* Search Button */}
+            <button style={styles.controlButton}
+              onClick={() => {
+                setShowSearchModal(true)
+              }}
+            >Search Files</button>
           </div>
      <div style={styles.fileContainer}>
       <div style={{ width: "100%", padding: 10 }}>
@@ -175,6 +331,20 @@ export default function App() {
          )
         }
        })}
+
+       {/* To display existing files and the uploaded files will be displayed in the file list. */}
+       {uploadedFiles.map((file) => (
+        <div style={styles.file} className="files" key={file.id} onClick={() => {
+          if (selectedFile && selectedFile.id === file.id) {
+            setSelectedFile(null);
+            return;
+          }
+          setSelectedFile(file);
+        }}>
+          <p>{file.name}</p>
+        </div>
+      ))}
+
       </div>
       {selectedFile && (
        <div style={styles.fileViewer}>
@@ -225,7 +395,7 @@ const styles = {
  fileViewer: {
   padding: '10px',
   margin: '10px',
-  width: '30vw',
+  width: '40vw',
   height: '100vh',
   cursor: 'pointer',
   borderLeft: '1px solid #000'
@@ -279,6 +449,18 @@ modalBody:{
   alignItems: 'center',
   flexDirection: 'row',
   padding: '10px',
+},
+
+// Added to make the restrict the filtered files from overflowing
+modalSearchList:{
+  width: '100%',
+  height: '90%',
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  flexDirection: 'column',
+  padding: '10px',
+  overflowY: 'auto', // Enable vertical scrolling
 },
 modalHeader: {
   width: '100%',
