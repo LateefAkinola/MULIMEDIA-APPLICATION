@@ -2,6 +2,49 @@
 
 The upload and search functionalities in detail:
 
+Sure! Here's the updated markdown write-up:
+
+---
+
+## **Description of the two features built and how they work**
+
+The Multimedia Web App consists of the following features:
+
+- **Upload Functionality:**
+   - The Upload Functionality allows users to select and upload files from their local system.
+   - When the user selects files using the file input field, the `handleFileUpload` function is triggered.
+   - The function receives the selected files and extracts relevant information such as the file name, type, and path.
+   - The file information is stored in the `uploadedFiles` array, which is then appended to the existing `myFiles` state.
+   - The app uses unique identifiers to assign an `id` to each uploaded file.
+   - Upon successful file upload, the `setShowUploadSuccessModal(true)` function is called to display an upload success modal to the user.
+
+- **Search Functionality:**
+   - The Search Functionality allows users to search for files based on keywords and file types.
+   - The search keyword and file type filter are stored in the `searchKeyword` and `searchFileType` states, respectively.
+   - Whenever any of these states change, the `useEffect` hook is triggered.
+   - Inside the hook, the app creates a new array called `allFiles` by combining the `myFiles` and `uploadedFiles` arrays.
+   - The `allFiles` array is then filtered based on the search conditions:
+     - If the file's name or type includes the search keyword (case-insensitive comparison), it is considered a match.
+     - If the selected file type is "all," all files are included in the filtered array.
+     - If a specific file type is selected, only files that match the keyword and have the selected file type are included.
+   - The filtered array is stored in the `filteredFiles` state and rendered in the search modal for display to the user.
+
+## **Reasons for Choosing these Features**
+
+These two features were chosen for the Multimedia Web App due to their practicality and usefulness in managing and organizing multimedia files.
+
+- **Upload Functionality:**
+   - Uploading files is a fundamental requirement for any multimedia application.
+   - By allowing users to upload files, the app enables them to add their own content to the system.
+   - This feature enhances user engagement and personalization, making the app more versatile and customizable.
+
+- **Search Functionality:**
+   - As the number of uploaded files increases, finding specific files becomes challenging.
+   - The search functionality simplifies file discovery by allowing users to search based on keywords and file types.
+   - Users can quickly locate desired files without manually scrolling through a long list, improving the overall user experience.
+
+## **Explanation of How the Code Works**
+
 **Upload Functionality:**
 - The `handleFileUpload` function is triggered when the user selects files using the file input field.
 - It receives the `event` object containing the selected files.
