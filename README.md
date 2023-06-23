@@ -35,7 +35,7 @@ These two features were chosen for the Multimedia Web App due to their practical
 
 - **Search Feature:**
    - As the number of uploaded files increases, finding specific files becomes challenging.
-   - The search functionality simplifies file discovery by allowing users to search based on keywords and file types.
+   - The search feature simplifies file discovery by allowing users to search based on keywords and file types.
    - Users can quickly locate desired files without manually scrolling through a long list, improving the overall user experience.
 
 ## **Explanation of How the Code Works**
@@ -89,4 +89,4 @@ These two features were chosen for the Multimedia Web App due to their practical
       - After updating the `newFiles` array, it sets the state variables accordingly. If the selected file is uploaded (`selectedFile.uploaded` is `true`), it calls `setUploadedFiles(newFiles)` to update the `uploadedFiles` state. Otherwise, it calls `setMyFiles(newFiles)` to update the `myFiles` state.
    
 
-**`That's a detailed explanation of the upload and search functionalities added to the multimedia app.`**
+**`That's a detailed explanation of the upload and search features added to the multimedia app.`**
