@@ -73,8 +73,19 @@ These two features were chosen for the Multimedia Web App due to their practical
    - The filtered array is then stored in the `filteredFiles` state.
    - The `filteredFiles` array is rendered in the search modal, displaying the matching files.
    - The search input field allows the user to enter a search keyword.
-   - The file type filter is implemented using a select dropdown, allowing the user to choose from different file types.
+   - The file type filter is implemented using a select dropdown, allowing users to choose from different file types.
    - Whenever the user changes the search keyword or file type filter, the corresponding states (`searchKeyword` or `searchFileType`) are updated accordingly.
    - The `filteredFiles` array is then updated based on the new search conditions, triggering a re-render of the search modal with the updated file list.
 
-That's a detailed explanation of the upload and search functionalities added to the multimedia app.
+`NOTE:` The Rename and Delete buttons were updated so that they could be able to work for the `uploaded` files.
+   - The `handleFileRename` function is responsible for renaming a selected file. Here's a breakdown of how it works:
+      - It first checks if there is a `selectedFile` available. If not, the function does nothing.
+      
+      - Depending on whether the `selectedFile` is uploaded or not (`selectedFile.uploaded`), it assigns the appropriate file array to the `updatedFiles` variable. If the file is uploaded, it assigns the `uploadedFiles` array; otherwise, it assigns the `myFiles` array.
+      
+      - It then maps over the `updatedFiles` array and creates a new array, `newFiles`. For the selected file, it checks if its `id` matches the `selectedFile.id`. If there is a match, it creates a new object with the updated `name` using the spread operator (`{ ...file, name: newName }`), while keeping the other properties of the file unchanged. For all other files, it simply returns the original file object.
+      
+      - After updating the `newFiles` array, it sets the state variables accordingly. If the selected file is uploaded (`selectedFile.uploaded` is `true`), it calls `setUploadedFiles(newFiles)` to update the `uploadedFiles` state. Otherwise, it calls `setMyFiles(newFiles)` to update the `myFiles` state.
+   
+
+`That's a detailed explanation of the upload and search functionalities added to the multimedia app.`*
