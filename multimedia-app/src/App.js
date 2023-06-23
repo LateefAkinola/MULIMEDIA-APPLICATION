@@ -88,21 +88,39 @@ export default function App() {
         id: Date.now() + i,
         name: file.name,
         type: getFileType(file.type),
-        path: URL.createObjectURL(file)
+        path: URL.createObjectURL(file),
+        uploaded: true
       };
       uploadedFiles.push(newFile);
-  }
+    }
 
-  // Update the file list with the uploaded files
-  setMyFiles((prevFiles) => [...prevFiles, ...uploadedFiles]);
   setUploadedFiles((prevFiles) => [...prevFiles, ...uploadedFiles]); // Update uploadedFiles state
+  setMyFiles((prevFiles) => [...prevFiles, ...uploadedFiles]);
   setUploadingFile(false);
-  // show successful upload modal 
-  setShowUploadSuccessModal(true);
-};
+  setShowUploadSuccessModal(true); // Show successful upload modal
+  };
 
+   // Handles file Rename
+  const handleFileRename = (newName) => {
+    if (selectedFile) {
+      const updatedFiles = selectedFile.uploaded ? uploadedFiles : myFiles;
+      const newFiles = updatedFiles.map((file) => {
+        if (file.id === selectedFile.id) {
+          return { ...file, name: newName };
+        }
+        return file;
+      });
+  
+      if (selectedFile.uploaded) {
+        setUploadedFiles(newFiles);
+      } else {
+        setMyFiles(newFiles);
+      }
+    }
+  };
+  
  // Get file type based on MIME type
- const getFileType = (fileType) => {
+  const getFileType = (fileType) => {
     if (fileType.startsWith("audio")) {
       return "audio";
     } else if (fileType.startsWith("video")) {
@@ -112,7 +130,7 @@ export default function App() {
     } else {
       return "document";
     }
- };
+  };
 
  return (
   <>
@@ -178,7 +196,7 @@ export default function App() {
       </div>
   )}
 
-  {/* Search Modal */}
+  {/*------------------------------------------ Search Modal --------------------------------------------------------*/}
   {showSearchModal && (
     <div style={styles.modal}>
      <div style={styles.modalContent}>
@@ -187,7 +205,7 @@ export default function App() {
         <button style={styles.closeButton} onClick={() => setShowSearchModal(false)}>&times; close</button>
        </div>
 
-        {/* File Search */}
+        {/*--------------File Search-------------------*/}
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 {/* Search input */}
                 <input
@@ -209,7 +227,7 @@ export default function App() {
                 </select>
         </div>
         
-        {/* Display filtered files */}
+        {/*------------------------Display filtered files------------------------ */}
         <div style={styles.modalSearchList}>
           <div style={{ width: "100%", padding: 10 }}>
             {/* Iterate over unique file IDs */}
@@ -242,7 +260,7 @@ export default function App() {
     </div>
     )}
 
-  {/* Upload Success Modal */}
+  {/*--------------------------------------------- Upload Success Modal -----------------------------------------*/}
   {showUploadSuccessModal && (
     <div style={styles.modal}>
      <div style={styles.modalUploadSuccess}>
@@ -255,7 +273,7 @@ export default function App() {
     </div>
   )}
 
-  {/* File Upload */}
+  {/*----------------File Upload--------------*/}
   <input
       type="file"
       accept="audio/*,video/*,image/*,application/pdf"
@@ -264,7 +282,8 @@ export default function App() {
       style={{ display: "none" }}
       ref={fileInputRef}
     />
-      
+
+   {/* ----------------------------------------------------------------   */}
    <div className="App">
     <Header />
     <div style={styles.container}>
@@ -280,26 +299,21 @@ export default function App() {
                   setUploadingFile(true);
                 }}
               >
-                {/* To display 'uploading...' when clicked */}
+                {/*----To display 'uploading...' when clicked------*/}
                 {uploadingFile ? "🔄 Uploading..." : "⬆ Upload Files"}
               </button>
-            <button style={styles.controlButton}
-              onClick={() => {
-                if (selectedFile) {
-                  const newFiles = myFiles.map(file => {
-                    if (file.id === selectedFile.id) {
-                      return {
-                        ...file,
-                        name: prompt("Enter new name")
-                      }
+              <button
+                style={styles.controlButton}
+                onClick={() => {
+                  if (selectedFile) {
+                    const newName = prompt("Enter new name", selectedFile.name);
+                    if (newName) {
+                      handleFileRename(newName);
                     }
-                    return file
-                  })
-                  setMyFiles(newFiles)
-                  setSelectedFile(null)
-                }
-              }}
-            >Rename</button>
+                    setSelectedFile(null);
+                  }
+                }}
+              >Rename</button>
             <button style={styles.controlButton}
               onClick={() => {
                 setShowChartModal(true)
